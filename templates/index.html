@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distributed System Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .status-item.active {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+
+        .status-item.inactive {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-indicator.active { background: #28a745; }
+        .status-indicator.inactive { background: #dc3545; }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn.danger {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+        }
+
+        .btn.success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .control-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .data-section {
+            grid-column: 1 / -1;
+        }
+
+        .data-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 200px;
+        }
+
+        .form-control {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .data-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .hash-ring {
+            margin-top: 20px;
+        }
+
+        .ring-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .ring-node {
+            background: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .metric-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-form {
+                flex-direction: column;
+            }
+            
+            .form-group {
+                min-width: unset;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Distributed System Manager</h1>
+            <p>Manage your distributed cache system with consistent hashing</p>
+        </div>
+
+        <div class="metrics" id="metrics">
+            <div class="metric-card">
+                <div class="metric-value" id="totalNodes">-</div>
+                <div class="metric-label">Total Nodes</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="activeNodes">-</div>
+                <div class="metric-label">Active Nodes</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="totalKeys">-</div>
+                <div class="metric-label">Stored Keys</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="replicationFactor">-</div>
+                <div class="metric-label">Replication Factor</div>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <!-- System Status -->
+            <div class="card">
+                <h2>🔧 System Status</h2>
+                <div id="systemStatus" class="loading">Loading...</div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="card">
+                <h2>⚡ Control Panel</h2>
+                <div class="control-panel">
+                    <button class="btn success" onclick="startPrimary()">Start Primary Server</button>
+                    <button class="btn danger" onclick="stopPrimary()">Stop Primary Server</button>
+                    <button class="btn" onclick="startAllWorkers()">Start All Workers</button>
+                    <button class="btn danger" onclick="stopAllWorkers()">Stop All Workers</button>
+                    <button class="btn" onclick="refreshStatus()">🔄 Refresh</button>
+                </div>
+                <div id="controlMessages"></div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="card data-section">
+                <h2>💾 Data Management</h2>
+                <div class="data-form">
+                    <div class="form-group">
+                        <label>Key:</label>
+                        <input type="text" id="keyInput" class="form-control" placeholder="Enter key">
+                    </div>
+                    <div class="form-group">
+                        <label>Value:</label>
+                        <input type="text" id="valueInput" class="form-control" placeholder="Enter value">
+                    </div>
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <div>
+                            <button class="btn success" onclick="setData()">💾 Store Data</button>
+                            <button class="btn" onclick="getData()">🔍 Get Data</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="dataMessages"></div>
+                
+                <div class="data-table">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Key</th>
+                                <th>Hash</th>
+                                <th>Primary Node</th>
+                                <th>Replicas</th>
+                                <th>Value Preview</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody">
+                            <tr><td colspan="6" class="loading">Loading data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <!-- Primary Server Logs -->
+<div class="card data-section">
+    <h2>📜 Primary Server Logs</h2>
+    <button class="btn" onclick="loadLogs()">🔄 Refresh Logs</button>
+    <pre id="logViewer" style="background:#000; color:#0f0; padding:15px; border-radius:10px; height:300px; overflow:auto; font-size:12px; margin-top:10px;">Loading logs...</pre>
+</div>
+
+            <!-- Hash Ring Visualization -->
+            <div class="card">
+                <h2>🔄 Hash Ring</h2>
+                <button class="btn" onclick="loadHashRing()">🔄 Refresh Ring</button>
+                <div id="hashRing" class="ring-container">
+                    <div class="loading">Click refresh to load hash ring...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let statusInterval;
+        let systemStatus = {};
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshStatus();
+            loadData();
+            loadLogs();
+            startStatusUpdates();
+        });
+
+        function startStatusUpdates() {
+            statusInterval = setInterval(() => {
+                refreshStatus();
+                loadData();
+                loadLogs();
+            }, 5000); // Update every 5 seconds
+        }
+
+        function showMessage(containerId, message, type = 'success') {
+            const container = document.getElementById(containerId);
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${type}`;
+            alertDiv.textContent = message;
+            container.innerHTML = '';
+            container.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        async function refreshStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const status = await response.json();
+                systemStatus = status;
+                updateStatusDisplay(status);
+                updateMetrics(status);
+            } catch (error) {
+                console.error('Error fetching status:', error);
+            }
+        }
+
+        function updateMetrics(status) {
+            document.getElementById('totalNodes').textContent = Object.keys(status.workers).length + 1;
+            document.getElementById('activeNodes').textContent = status.active_nodes_count + (status.primary.active ? 1 : 0);
+            document.getElementById('totalKeys').textContent = status.keys_count;
+            document.getElementById('replicationFactor').textContent = status.replication_factor;
+        }
+
+        function updateStatusDisplay(status) {
+            const container = document.getElementById('systemStatus');
+            
+            let html = '<div class="status-grid">';
+            
+            // Primary server status
+            const primaryClass = status.primary.active ? 'active' : 'inactive';
+            const primaryIndicator = status.primary.active ? 'active' : 'inactive';
+            html += `
+                <div class="status-item ${primaryClass}">
+                    <strong>Primary Server</strong><br>
+                    <span class="status-indicator ${primaryIndicator}"></span>
+                    Port: ${status.primary.port}<br>
+                    Status: ${status.primary.active ? 'Active' : 'Inactive'}
+                </div>
+            `;
+            
+            // Worker nodes status
+            for (const [nodeId, nodeStatus] of Object.entries(status.workers)) {
+                const nodeClass = nodeStatus.active ? 'active' : 'inactive';
+                const nodeIndicator = nodeStatus.active ? 'active' : 'inactive';
+                html += `
+                    <div class="status-item ${nodeClass}">
+                        <strong>${nodeId}</strong><br>
+                        <span class="status-indicator ${nodeIndicator}"></span>
+                        Port: ${nodeStatus.port}<br>
+                        Status: ${nodeStatus.active ? 'Active' : 'Inactive'}<br>
+                        <div style="margin-top: 10px;">
+                            <button class="btn success" onclick="startWorker('${nodeId}')" ${nodeStatus.active ? 'disabled' : ''}>Start</button>
+                            <button class="btn danger" onclick="stopWorker('${nodeId}')" ${!nodeStatus.active ? 'disabled' : ''}>Stop</button>
+                            <button class="btn danger" onclick="simulateFailure('${nodeId}')" ${!nodeStatus.active ? 'disabled' : ''}>💥 Fail</button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        async function startPrimary() {
+            try {
+                const response = await fetch('/api/start_primary', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const result = await response.json();
+                showMessage('controlMessages', result.message, result.success ? 'success' : 'error');
+                setTimeout(refreshStatus, 1000);
+            } catch (error) {
+                showMessage('controlMessages', 'Error starting primary server', 'error');
+            }
+        }
+
+        async function stopPrimary() {
+            try {
+                const response = await fetch('/api/stop_primary', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const result = await response.json();
+                showMessage('controlMessages', result.message, result.success ? 'success' : 'error');
+                setTimeout(refreshStatus, 1000);
+            } catch (error) {
+                showMessage('controlMessages', 'Error stopping primary server', 'error');
+            }
+        }
+
+        async function startWorker(nodeId) {
+            try {
+                const response = await fetch('/api/start_worker', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ node_id: nodeId })
+                });
+                const result = await response.json();
+                showMessage('controlMessages', result.message, result.success ? 'success' : 'error');
+                setTimeout(refreshStatus, 1000);
+            } catch (error) {
+                showMessage('controlMessages', `Error starting worker ${nodeId}`, 'error');
+            }
+        }
+
+        async function stopWorker(nodeId) {
+            try {
+                const response = await fetch('/api/stop_worker', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ node_id: nodeId })
+                });
+                const result = await response.json();
+                showMessage('controlMessages', result.message, result.success ? 'success' : 'error');
+                setTimeout(refreshStatus, 1000);
+            } catch (error) {
+                showMessage('controlMessages', `Error stopping worker ${nodeId}`, 'error');
+            }
+        }
+
+        async function simulateFailure(nodeId) {
+            if (confirm(`Are you sure you want to simulate failure of ${nodeId}?`)) {
+                try {
+                    const response = await fetch('/api/simulate_failure', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ node_id: nodeId })
+                    });
+                    const result = await response.json();
+                    showMessage('controlMessages', result.message, result.success ? 'success' : 'error');
+                    setTimeout(refreshStatus, 1000);
+                } catch (error) {
+                    showMessage('controlMessages', `Error simulating failure of ${nodeId}`, 'error');
+                }
+            }
+        }
+
+        async function startAllWorkers() {
+            const workers = Object.keys(systemStatus.workers || {});
+            let successCount = 0;
+            
+            for (const nodeId of workers) {
+                if (!systemStatus.workers[nodeId].active) {
+                    try {
+                        const response = await fetch('/api/start_worker', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ node_id: nodeId })
+                        });
+                        const result = await response.json();
+                        if (result.success) successCount++;
+                    } catch (error) {
+                        console.error(`Error starting ${nodeId}:`, error);
+                    }
+                }
+            }
+            
+            showMessage('controlMessages', `Started ${successCount} worker nodes`, 'success');
+            setTimeout(refreshStatus, 2000);
+        }
+
+        async function stopAllWorkers() {
+            if (confirm('Are you sure you want to stop all worker nodes?')) {
+                const workers = Object.keys(systemStatus.workers || {});
+                let successCount = 0;
+                
+                for (const nodeId of workers) {
+                    if (systemStatus.workers[nodeId].active) {
+                        try {
+                            const response = await fetch('/api/stop_worker', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ node_id: nodeId })
+                            });
+                            const result = await response.json();
+                            if (result.success) successCount++;
+                        } catch (error) {
+                            console.error(`Error stopping ${nodeId}:`, error);
+                        }
+                    }
+                }
+                
+                showMessage('controlMessages', `Stopped ${successCount} worker nodes`, 'success');
+                setTimeout(refreshStatus, 2000);
+            }
+        }
+
+        async function setData() {
+            const key = document.getElementById('keyInput').value.trim();
+            const value = document.getElementById('valueInput').value.trim();
+            
+            if (!key || !value) {
+                showMessage('dataMessages', 'Please enter both key and value', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key, value })
+                });
+                const result = await response.json();
+                showMessage('dataMessages', result.message, result.success ? 'success' : 'error');
+                
+                if (result.success) {
+                    document.getElementById('keyInput').value = '';
+                    document.getElementById('valueInput').value = '';
+                    setTimeout(loadData, 1000);
+                }
+            } catch (error) {
+                showMessage('dataMessages', 'Error storing data', 'error');
+            }
+        }
+
+        async function getData() {
+            const key = document.getElementById('keyInput').value.trim();
+            
+            if (!key) {
+                showMessage('dataMessages', 'Please enter a key to retrieve', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/data/${encodeURIComponent(key)}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('valueInput').value = result.value;
+                    showMessage('dataMessages', `Retrieved value for key "${key}"`, 'success');
+                } else {
+                    showMessage('dataMessages', result.message, 'error');
+                }
+            } catch (error) {
+                showMessage('dataMessages', 'Error retrieving data', 'error');
+            }
+        }
+
+        async function loadData() {
+            try {
+                const response = await fetch('/api/data');
+                const data = await response.json();
+                updateDataTable(data.keys);
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('dataTableBody').innerHTML = 
+                    '<tr><td colspan="6" class="loading">Error loading data</td></tr>';
+            }
+        }
+
+        function updateDataTable(keys) {
+            const tbody = document.getElementById('dataTableBody');
+            
+            if (keys.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="loading">No data stored</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = keys.map(item => `
+                <tr>
+                    <td><strong>${item.key}</strong></td>
+                    <td><code>${item.hash}</code></td>
+                    <td><span class="status-indicator active"></span>${item.primary}</td>
+                    <td>${item.replicas.join(', ')}</td>
+                    <td>${item.value}</td>
+                    <td>
+                        <button class="btn" onclick="loadKeyToForm('${item.key}')">📝 Edit</button>
+                        <button class="btn danger" onclick="confirmDelete('${item.key}')">🗑️ Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function loadKeyToForm(key) {
+            document.getElementById('keyInput').value = key;
+            getData();
+        }
+
+        function confirmDelete(key) {
+            showMessage('dataMessages', 'Delete operation not implemented in the backend', 'error');
+        }
+
+        async function loadHashRing() {
+            const container = document.getElementById('hashRing');
+            container.innerHTML = '<div class="loading">Loading hash ring...</div>';
+            
+            try {
+                const response = await fetch('/api/hash_ring');
+                const data = await response.json();
+                
+                if (data.error) {
+                    container.innerHTML = `<div class="alert error">Error: ${data.error}</div>`;
+                    return;
+                }
+                
+                if (data.ring_data.length === 0) {
+                    container.innerHTML = '<div class="loading">No active nodes to display</div>';
+                    return;
+                }
+                
+                let html = '<h3>Virtual Nodes Distribution</h3>';
+                
+                // Group by node
+                const nodeGroups = {};
+                data.ring_data.forEach(item => {
+                    if (!nodeGroups[item.node]) {
+                        nodeGroups[item.node] = [];
+                    }
+                    nodeGroups[item.node].push(item);
+                });
+                
+                for (const [node, vnodes] of Object.entries(nodeGroups)) {
+                    html += `
+                        <div class="ring-node">
+                            <h4>${node}:</h4>
+                            ${vnodes.map(vnode => 
+                                `<div style="margin-left: 20px; padding: 5px 0;">
+                                    ↳ ${vnode.vnode} → hash: ${vnode.hash}
+                                </div>`
+                            ).join('')}
+                        </div>
+                    `;
+                }
+                
+                container.innerHTML = html;
+            } catch (error) {
+                container.innerHTML = '<div class="alert error">Error loading hash ring</div>';
+                console.error('Error loading hash ring:', error);
+            }
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (statusInterval) {
+                clearInterval(statusInterval);
+            }
+        });
+        async function loadLogs() {
+    try {
+        const res = await fetch('/api/logs');
+        const data = await res.json();
+        const viewer = document.getElementById('logViewer');
+
+        if (data.success) {
+            viewer.textContent = data.logs.join('');
+        } else {
+            viewer.textContent = "Error loading logs: " + data.error;
+        }
+    } catch (e) {
+        document.getElementById('logViewer').textContent = "Exception fetching logs.";
+    }
+}
+
+    </script>
+</body>
+</html>
