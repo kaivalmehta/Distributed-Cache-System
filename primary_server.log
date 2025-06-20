@@ -1,0 +1,19 @@
+Active nodes detected: ['node1', 'node4']
+[PrimaryServer] Starting on port 4001
+[PrimaryServer]  GET request for 'kaival' -> checking replicas: ['node4', 'node1']
+[PrimaryServer] -> Trying node4...
+[PrimaryServer]  node4 did not return value.
+[PrimaryServer] -> Trying node1...
+[PrimaryServer]  node1 did not return value.
+[PrimaryServer] Cache miss  found in DataStore. Replicating to ['node4', 'node1']
+[PrimaryServer]  GET request for 'nishil' -> checking replicas: ['node4', 'node1']
+[PrimaryServer] -> Trying node4...
+[PrimaryServer]  Found value in node4: patel
+[PrimaryServer]  GET request for 'denil' -> checking replicas: ['node4', 'node1']
+[PrimaryServer] -> Trying node4...
+[PrimaryServer]  node4 did not return value.
+[PrimaryServer] -> Trying node1...
+[PrimaryServer]  node1 did not return value.
+[PrimaryServer] Cache miss  found in DataStore. Replicating to ['node4', 'node1']
+Traceback (most recent call last):
+  File "/home/kaival/Desktop/myapp/primary_server.py", line 204, in <module>
