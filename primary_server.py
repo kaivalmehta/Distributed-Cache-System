@@ -126,7 +126,6 @@ class PrimaryCacheServer:
             try:
                 request = pickle.loads(data)
             except pickle.UnpicklingError:
-                print("⚠️ Received invalid data — likely an HTTP request or corrupted client")
                 return
             action = request.get("action")
             if action in ("GET", "SET", "KEY_METADATA", "DELETE"):

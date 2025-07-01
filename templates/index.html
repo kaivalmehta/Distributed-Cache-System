@@ -466,7 +466,7 @@
                         <div style="margin-top: 10px;">
                             <button class="btn success" onclick="startWorker('${nodeId}')" ${nodeStatus.active ? 'disabled' : ''}>Start</button>
                             <button class="btn danger" onclick="stopWorker('${nodeId}')" ${!nodeStatus.active ? 'disabled' : ''}>Stop</button>
-                            <button class="btn danger" onclick="simulateFailure('${nodeId}')" ${!nodeStatus.active ? 'disabled' : ''}>💥 Fail</button>
+                          
                         </div>
                     </div>
                 `;
@@ -680,7 +680,7 @@
                     <td>${item.replicas.join(', ')}</td>
                     <td>${item.value}</td>
                     <td>
-                        <button class="btn" onclick="loadKeyToForm('${item.key}')">📝 Edit</button>
+          
                         <button class="btn danger" onclick="confirmDelete('${item.key}')">🗑️ Delete</button>
                     </td>
                 </tr>
