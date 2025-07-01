@@ -1,19 +1,17 @@
-Active nodes detected: ['node1', 'node4']
+Active nodes detected: ['node1', 'node2', 'node3']
 [PrimaryServer] Starting on port 4001
-[PrimaryServer]  GET request for 'kaival' -> checking replicas: ['node4', 'node1']
-[PrimaryServer] -> Trying node4...
-[PrimaryServer]  node4 did not return value.
+[PrimaryServer]  GET request for 'dis' -> checking replicas: ['node2', 'node1']
+[PrimaryServer] -> Trying node2...
+[PrimaryServer]  node2 did not return value.
 [PrimaryServer] -> Trying node1...
 [PrimaryServer]  node1 did not return value.
-[PrimaryServer] Cache miss  found in DataStore. Replicating to ['node4', 'node1']
-[PrimaryServer]  GET request for 'nishil' -> checking replicas: ['node4', 'node1']
-[PrimaryServer] -> Trying node4...
-[PrimaryServer]  Found value in node4: patel
-[PrimaryServer]  GET request for 'denil' -> checking replicas: ['node4', 'node1']
-[PrimaryServer] -> Trying node4...
-[PrimaryServer]  node4 did not return value.
-[PrimaryServer] -> Trying node1...
-[PrimaryServer]  node1 did not return value.
-[PrimaryServer] Cache miss  found in DataStore. Replicating to ['node4', 'node1']
+[PrimaryServer] Cache miss  found in DataStore. Replicating to ['node2', 'node1']
+[PrimaryServer]  GET request for 'dis' -> checking replicas: ['node2', 'node1']
+[PrimaryServer] -> Trying node2...
+[PrimaryServer]  Found value in node2: sys
+[Monitor] Detected failure of node: node2
+Removed node node2 (cleaned 100 vnodes)
+
+[Redistribution] Starting for failed node node2
 Traceback (most recent call last):
-  File "/home/kaival/Desktop/myapp/primary_server.py", line 204, in <module>
+  File "/home/kaival/Downloads/Distributed-Cache-System-main 2/Distributed-Cache-System-main/primary_server.py", line 221, in <module>

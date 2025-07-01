@@ -126,8 +126,25 @@ class PrimaryCacheServer:
 
             request = pickle.loads(data)
             action = request.get("action")
-            if action in ("GET", "SET", "KEY_METADATA"):
+            if action in ("GET", "SET", "KEY_METADATA", "DELETE"):
                 key = request.get("key")
+
+            if action == "DELETE":
+                removed = self.datastore.store.pop(key, None) is not None
+                replicas = self.hash_ring.get_replicas(key, REPLICATION_FACTOR)
+
+                for node in replicas:
+
+                    try:
+
+                        with socket.create_connection(("localhost", WORKER_PORTS[node])) as sock:
+                            sock.sendall(pickle.dumps({"action": "DELETE", "key": key}))
+                    except:
+                        pass
+                
+                status = "DELETED" if removed else "MISS"
+                conn.sendall(pickle.dumps({"status": status, "message": removed and "" or "Key not found"}))
+                return
 
             if action == "GET":
                 nodes = self.hash_ring.get_replicas(key, REPLICATION_FACTOR)

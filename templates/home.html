@@ -1,0 +1,110 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Distributed Caching System</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-indigo-500 to-purple-600 text-gray-800">
+  <!-- Container -->
+  <div class="max-w-5xl mx-auto py-12 px-4">
+    <!-- Hero -->
+    <header class="text-center mb-16">
+      <h1 class="text-4xl font-extrabold text-white mb-4">🚀 Distributed Caching System</h1>
+      <p class="text-lg text-gray-100 mb-6">A self-healing, consistent-hashing cache manager with live metrics, failover, and REST API.</p>
+      <a href="/dashboard" class="inline-block bg-white text-indigo-600 font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-gray-100 transition">Go to Dashboard</a>
+    </header>
+
+    <!-- Features -->
+    <section class="grid gap-8 md:grid-cols-2 mb-16">
+      <div class="flex items-start">
+        <div class="text-3xl mr-4">🔗</div>
+        <div>
+          <h3 class="text-xl font-semibold text-white">Consistent Hashing</h3>
+          <p class="text-gray-100">Distribute keys evenly across nodes using virtual nodes for minimal reshuffling.</p>
+        </div>
+      </div>
+      <div class="flex items-start">
+        <div class="text-3xl mr-4">🛡️</div>
+        <div>
+          <h3 class="text-xl font-semibold text-white">Self-healing Failover</h3>
+          <p class="text-gray-100">Automatic detection of node failures and redistribution of cache entries.</p>
+        </div>
+      </div>
+      <div class="flex items-start">
+        <div class="text-3xl mr-4">⚙️</div>
+        <div>
+          <h3 class="text-xl font-semibold text-white">LRU Worker Caches</h3>
+          <p class="text-gray-100">Each worker node uses an LRU cache to manage capacity and eviction policies.</p>
+        </div>
+      </div>
+      <div class="flex items-start">
+        <div class="text-3xl mr-4">📊</div>
+        <div>
+          <h3 class="text-xl font-semibold text-white">Live Dashboard</h3>
+          <p class="text-gray-100">Real-time metrics and controls via a web interface to manage primary and worker nodes.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architecture -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold text-white mb-4">Architecture Overview</h2>
+      <!-- Placeholder Diagram -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <img src="/static/image.png" alt="Architecture Diagram" class="mx-auto" />
+      </div>
+    </section>
+
+    <!-- Quick Start -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold text-white mb-4">Quick Start</h2>
+      <ol class="list-decimal list-inside text-gray-100 space-y-2">
+        <li>Go the dashboard </li>
+        <li>Start one or more worker nodes</code></li>
+        <li>Start Primary Server</li>
+        <li>Get and Set some keys</li>
+        <li>You can stop any node and see the redistribution of keys</li>
+        <li>You can refresh and see the hashing ring for reference</li>
+        <li>You can also see the primary server logs for reference</li>
+        <li>Open this page and click "Go to Dashboard".</li>
+      </ol>
+    </section>
+
+    <!-- API Reference -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold text-white mb-4">API Reference</h2>
+      <div class="overflow-x-auto bg-white rounded-lg shadow-md">
+        <table class="w-full table-auto">
+          <thead class="bg-indigo-600 text-white">
+            <tr>
+              <th class="px-4 py-2">Endpoint</th>
+              <th class="px-4 py-2">Method</th>
+              <th class="px-4 py-2">Description</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-800">
+            <tr><td class="border px-4 py-2">/api/status</td><td class="border px-4 py-2">GET</td><td class="border px-4 py-2">Get system health & metrics</td></tr>
+            <tr><td class="border px-4 py-2">/api/data</td><td class="border px-4 py-2">GET</td><td class="border px-4 py-2">List all keys & metadata</td></tr>
+            <tr><td class="border px-4 py-2">/api/data</td><td class="border px-4 py-2">POST</td><td class="border px-4 py-2">Store a key-value pair</td></tr>
+            <tr><td class="border px-4 py-2">/api/data/:key</td><td class="border px-4 py-2">GET</td><td class="border px-4 py-2">Retrieve a key's value</td></tr>
+            <tr><td class="border px-4 py-2">/api/data/:key</td><td class="border px-4 py-2">DELETE</td><td class="border px-4 py-2">Delete a key</td></tr>
+            <tr><td class="border px-4 py-2">/api/hash_ring</td><td class="border px-4 py-2">GET</td><td class="border px-4 py-2">Get virtual node distribution</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Contribute -->
+    <section class="text-center text-gray-100 mb-8">
+      <p>Found a bug or have an idea? <a href="<repo-url>" class="underline font-semibold">Contribute on GitHub</a></p>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center text-gray-300 text-sm">
+      <p>&copy; 2025 Distributed System Manager • MIT License</p>
+    </footer>
+  </div>
+</body>
+</html>

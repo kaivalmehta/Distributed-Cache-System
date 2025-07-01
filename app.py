@@ -80,7 +80,11 @@ class SystemManager:
 system_manager = SystemManager()
 
 @app.route('/')
-def index():
+def home():
+    return render_template('home.html')
+
+@app.route('/dashboard')
+def dashboard():
     return render_template('index.html')
 
 @app.route('/api/status')
@@ -247,8 +251,13 @@ def get_key(key):
 
 @app.route('/api/data/<key>', methods=['DELETE'])
 def delete_key(key):
-    # Note: Your current implementation doesn't have DELETE, so this is a placeholder
-    return jsonify({'success': False, 'message': 'Delete operation not implemented in the backend'})
+    # Forward DELETE to the primary
+    response = system_manager.send_request('DELETE', key)
+    if response.get('status') == 'DELETED':
+        return jsonify({'success': True, 'message': f'Key "{key}" deleted successfully'})
+    else:
+        msg = response.get('message', 'Unknown error')
+        return jsonify({'success': False, 'message': f'Failed to delete key: {msg}'})
 
 @app.route('/api/simulate_failure', methods=['POST'])
 def simulate_failure():

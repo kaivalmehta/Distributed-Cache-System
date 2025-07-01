@@ -49,6 +49,20 @@ class WorkerNode:
             action = command.get("action")
             key = command.get("key")
 
+            if action == "DELETE":
+
+                if key in self.cache:
+
+                    self.cache.cache.pop(key, None)
+                    response = {"status": "DELETED"}
+
+                else:
+
+                    response = {"status": "NOT_FOUND"}
+                
+                conn.sendall(pickle.dumps(response))
+                return
+
             if action == "SET":
                 value = command.get("value")
                 if key is not None and value is not None:
