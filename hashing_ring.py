@@ -10,9 +10,9 @@ class ConsistentHashRing:
         self.ring = {}
         self.sorted_keys = []
         self.vnodes = vnodes
-        self.nodes = nodes or []
+        self.nodes =  []
 
-        for node in self.nodes:
+        for node in nodes:
             self.add_node(node)
 
     def _hash(self, key):
@@ -24,6 +24,7 @@ class ConsistentHashRing:
             h = self._hash(vnode_key)
             self.ring[h] = node
             bisect.insort(self.sorted_keys, h)
+        self.nodes.append(node)
 
     def remove_node(self, node):
         keys_to_remove = [h for h, n in self.ring.items() if n == node]
